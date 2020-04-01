@@ -1,5 +1,7 @@
 from PIL import Image, ImageDraw
 
+curve = []
+
 
 def get_color(i):
     if i % 3 == 0:
@@ -52,33 +54,49 @@ def de_boor(k: int, x: int, t, c, p: int, draw):
             d[j] = list(map(add, a, b))
             line.append(tuple(d[j]))
     assert (len(line) == 1)
+
+    global curve
     curve.append(tuple(line[0]))
     return d[p]
 
 
-if __name__ == '__main__':
-    #x, y, weight
+def get_knots_vec(control_points, spline_deg):
+    knot_vector = []
+    for i in range(spline_deg):
+        knot_vector.append(0)
+
+    for i in range(len(control_points) + 1 - spline_deg):
+        knot_vector.append(0)
+
+    for i in range(spline_deg):
+        knot_vector.append(1)
+
+    return knot_vector
+
+
+def main():
+    # x, y, weight
     width = 500
     height = 500
 
-    curve = []
+    global curve
 
-    control_points = (
-        (50,  150,  1/10),
-        (150, 400, 1/10),
-        (350, 450, 1/10),
-        (450, 150, 7/10),
-        (250, 100, 7/10),
-    )
+    control_points = [
+        (50, 150, 1 / 10),
+        (150, 400, 1 / 10),
+        (350, 450, 1 / 10),
+        (450, 150, 7 / 10),
+        (250, 100, 7/10)
+    ]
 
     p = 4
-    knot_vector = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
+    knot_vector = get_knots_vec(control_points, p)
     knot_vector_cropped = [knot_vector[j] for j in range(p, len(knot_vector) - p)]
 
     steps_count = 100
 
-    x_start = 0
-    x_end = 1
+    x_start = control_points[0][0]
+    x_end = control_points[-1][0]
     step_len = (x_end - x_start) / steps_count
 
     images = []
@@ -108,3 +126,7 @@ if __name__ == '__main__':
         images.append(im)
 
     images[0].save('de_boor.gif', save_all=True, append_images=images, optimize=False, duration=50, loop=0)
+
+
+if __name__ == '__main__':
+    main()
