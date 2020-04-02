@@ -56,6 +56,21 @@ def de_boor(k: int, x: int, t, c, p: int, draw):
     return d[p]
 
 
+def get_knots_vec(control_points, spline_deg):
+    knot_vector = []
+    for i in range(spline_deg):
+        knot_vector.append(0)
+
+    m = spline_deg + len(control_points) + 1 - 2 * p
+    for i in range(m):
+        knot_vector.append(i / (m - 1))
+
+    for i in range(spline_deg):
+        knot_vector.append(1)
+
+    return knot_vector
+
+
 if __name__ == '__main__':
     #x, y, weight
     width = 500
@@ -64,15 +79,16 @@ if __name__ == '__main__':
     curve = []
 
     control_points = (
-        (50,  150,  1/10),
+        (50,  150, 1/10),
         (150, 400, 1/10),
         (350, 450, 1/10),
         (450, 150, 7/10),
         (250, 100, 7/10),
+        (50, 150,  7/10),
     )
 
-    p = 4
-    knot_vector = [0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
+    p = 5
+    knot_vector = get_knots_vec(control_points, p)
     knot_vector_cropped = [knot_vector[j] for j in range(p, len(knot_vector) - p)]
 
     steps_count = 100
